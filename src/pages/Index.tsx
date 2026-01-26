@@ -14,8 +14,8 @@ import NewsletterSection from "@/components/home/NewsletterSection";
 import BenefitsBar from "@/components/home/BenefitsBar";
 import VideoAdBanner from "@/components/home/VideoAdBanner";
 import SideAdBanner from "@/components/home/SideAdBanner";
-import FloatingAdStrip from "@/components/home/FloatingAdStrip";
 import InlineProductAd from "@/components/home/InlineProductAd";
+import FloatingPromoCard from "@/components/home/FloatingPromoCard";
 
 const Index = () => {
   return (
@@ -36,7 +36,7 @@ const Index = () => {
         <InstagramFeed />
         <NewsletterSection />
         <BenefitsBar />
-        <FloatingAdStrip />
+        <FloatingPromoCard />
       </PageTransition>
     </Layout>
   );

@@ -12,7 +12,6 @@ import BrandStory from "@/components/home/BrandStory";
 import InstagramFeed from "@/components/home/InstagramFeed";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import BenefitsBar from "@/components/home/BenefitsBar";
-import VideoAdBanner from "@/components/home/VideoAdBanner";
 import SideAdBanner from "@/components/home/SideAdBanner";
 import InlineProductAd from "@/components/home/InlineProductAd";
 import FloatingPromoCard from "@/components/home/FloatingPromoCard";
@@ -27,7 +26,6 @@ const Index = () => {
         <SideAdBanner variant="horizontal" className="container mx-auto px-4 py-8" />
         <FeaturedCategories />
         <PromoBanner />
-        <VideoAdBanner />
         <NewArrivals />
         <InlineProductAd />
         <IngredientsSpotlight />

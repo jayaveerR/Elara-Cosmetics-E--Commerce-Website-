@@ -54,12 +54,12 @@ const Header = () => {
   return (
     <>
       <header className={cn(
-        "sticky top-0 z-50 bg-background border-b border-border transition-all duration-300",
-        isScrolled && "shadow-md"
+        "sticky top-0 z-50 bg-cream transition-all duration-300",
+        isScrolled ? "shadow-sm border-b border-border/30" : "border-b border-transparent"
       )}>
         {/* Top Utility Bar - Hidden when scrolled */}
         <div className={cn(
-          "hidden lg:block bg-secondary/50 border-b border-border/50 transition-all duration-300 overflow-hidden",
+          "hidden lg:block bg-cream-dark/40 border-b border-border/20 transition-all duration-300 overflow-hidden",
           isScrolled ? "h-0 opacity-0" : "h-9 opacity-100"
         )}>
           <div className="container mx-auto px-4">
@@ -84,10 +84,10 @@ const Header = () => {
         </div>
 
         {/* Main Header with Centered Logo */}
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 bg-cream">
           <div className={cn(
             "flex items-center justify-between transition-all duration-300",
-            isScrolled ? "h-14 md:h-16" : "h-16 md:h-20"
+            isScrolled ? "h-16 md:h-18" : "h-20 md:h-24"
           )}>
             {/* Left Side - Mobile Menu & Search */}
             <div className="flex items-center gap-2 lg:hidden">
@@ -118,17 +118,20 @@ const Header = () => {
               </button>
             </div>
 
-            {/* Centered Logo */}
+            {/* Centered Logo - Seamless blend */}
             <Link to="/" className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0 lg:flex-1 lg:flex lg:justify-center group">
               <img 
                 src={logoImage} 
                 alt="Elara Cosmetics" 
                 className={cn(
-                  "w-auto object-contain transition-all duration-300 group-hover:scale-[1.02]",
+                  "w-auto object-contain transition-all duration-500 ease-out group-hover:scale-[1.02]",
                   isScrolled 
-                    ? "h-12 sm:h-14 md:h-16" 
-                    : "h-16 sm:h-20 md:h-24"
+                    ? "h-14 sm:h-16 md:h-18" 
+                    : "h-18 sm:h-22 md:h-28"
                 )}
+                style={{
+                  filter: 'drop-shadow(0 1px 2px rgba(0, 0, 0, 0.02))'
+                }}
               />
             </Link>
 
@@ -158,7 +161,7 @@ const Header = () => {
 
         {/* Desktop Navigation Bar */}
         <nav className={cn(
-          "hidden lg:block border-t border-border/50 bg-background transition-all duration-300",
+          "hidden lg:block border-t border-border/20 bg-cream transition-all duration-300",
           isScrolled && "border-t-0"
         )}>
           <div className="container mx-auto px-4">

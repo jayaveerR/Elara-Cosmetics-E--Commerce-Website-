@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, MapPin, Phone, Gift, Sparkles, ArrowRight, Truck, RefreshCw } from "lucide-react";
+import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, MapPin, Phone, Sparkles, ArrowRight, Gift } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { categories, products } from "@/data/products";
 import { cn } from "@/lib/utils";
@@ -59,54 +59,6 @@ const Header = () => {
         "bg-background/70 backdrop-blur-md lg:bg-cream lg:backdrop-blur-none",
         isScrolled ? "shadow-sm border-b border-border/30" : "border-b border-transparent"
       )}>
-        {/* Integrated Announcement Bar - Scrolling promo messages */}
-        <div className={cn(
-          "hidden lg:block bg-accent text-accent-foreground overflow-hidden transition-all duration-300",
-          isScrolled ? "h-0 opacity-0" : "h-7 opacity-100"
-        )}>
-          <div className="animate-scroll-left flex whitespace-nowrap h-full items-center">
-            {[...Array(3)].flatMap((_, setIndex) => [
-              <div key={`truck-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <Truck className="w-3.5 h-3.5" />
-                <span>Free Shipping on Orders Above ₹999</span>
-              </div>,
-              <div key={`gift-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <Gift className="w-3.5 h-3.5" />
-                <span>Complimentary Gift Wrapping Available</span>
-              </div>,
-              <div key={`return-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Easy 30-Day Returns</span>
-              </div>
-            ])}
-          </div>
-        </div>
-
-        {/* Top Utility Bar - Hidden when scrolled */}
-        <div className={cn(
-          "hidden lg:block bg-cream-dark/40 border-b border-border/20 transition-all duration-300 overflow-hidden",
-          isScrolled ? "h-0 opacity-0" : "h-9 opacity-100"
-        )}>
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between h-9 text-xs">
-              <div className="flex items-center gap-6 text-muted-foreground">
-                <a href="tel:+918019156646" className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                  <Phone className="w-3 h-3" />
-                  <span>+91 8019156646</span>
-                </a>
-                <Link to="/stores" className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                  <MapPin className="w-3 h-3" />
-                  <span>Store Locator</span>
-                </Link>
-              </div>
-              <div className="flex items-center gap-6 text-muted-foreground">
-                <Link to="/about" className="hover:text-primary transition-colors">About Us</Link>
-                <Link to="/contact" className="hover:text-primary transition-colors">Contact</Link>
-                <Link to="/account" className="hover:text-primary transition-colors">My Account</Link>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Main Header with Centered Logo */}
         <div className="container mx-auto px-4 bg-transparent lg:bg-cream">
@@ -184,124 +136,168 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Desktop Navigation Bar */}
+        {/* Desktop Navigation Bar - Unified */}
         <nav className={cn(
           "hidden lg:block border-t border-border/20 bg-cream transition-all duration-300",
           isScrolled && "border-t-0"
         )}>
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center gap-1 xl:gap-2">
-              {mainNavigation.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative"
-                  onMouseEnter={() => hasSubcategories(item) ? handleMouseEnter(item.id) : null}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <Link
-                    to={'href' in item ? item.href : `/category/${item.id}`}
-                    className={cn(
-                      "flex items-center gap-1 px-3 xl:px-4 text-xs xl:text-sm uppercase tracking-luxury font-medium transition-all underline-animation",
-                      isScrolled ? "py-2.5" : "py-4",
-                      'highlight' in item && item.highlight 
-                        ? "text-primary" 
-                        : "text-foreground hover:text-primary"
-                    )}
-                  >
-                    {item.name}
-                    {hasSubcategories(item) && (
-                      <ChevronDown
-                        className={cn(
-                          "w-3 h-3 transition-transform duration-200",
-                          activeDropdown === item.id && "rotate-180"
-                        )}
-                      />
-                    )}
-                  </Link>
+            <div className="flex items-center justify-between">
+              {/* Left: Utility Links */}
+              <div className="flex items-center gap-4">
+                <Link to="/about" className={cn(
+                  "text-xs uppercase tracking-luxury font-medium text-muted-foreground hover:text-primary transition-colors",
+                  isScrolled ? "py-2.5" : "py-4"
+                )}>
+                  About Us
+                </Link>
+                <Link to="/contact" className={cn(
+                  "text-xs uppercase tracking-luxury font-medium text-muted-foreground hover:text-primary transition-colors",
+                  isScrolled ? "py-2.5" : "py-4"
+                )}>
+                  Contact
+                </Link>
+              </div>
 
-                  {/* Enhanced Mega Menu for categories */}
-                  {hasSubcategories(item) && 'subcategories' in item && 'image' in item && (
-                    <div
+              {/* Center: Main Navigation */}
+              <div className="flex items-center gap-1 xl:gap-2">
+                {mainNavigation.map((item) => (
+                  <div
+                    key={item.id}
+                    className="relative"
+                    onMouseEnter={() => hasSubcategories(item) ? handleMouseEnter(item.id) : null}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <Link
+                      to={'href' in item ? item.href : `/category/${item.id}`}
                       className={cn(
-                        "absolute top-full left-1/2 -translate-x-1/2 bg-background border border-border shadow-luxury-lg w-[600px] transition-all duration-200 z-50",
-                        activeDropdown === item.id
-                          ? "opacity-100 visible translate-y-0"
-                          : "opacity-0 invisible -translate-y-2"
+                        "flex items-center gap-1 px-3 xl:px-4 text-xs xl:text-sm uppercase tracking-luxury font-medium transition-all underline-animation",
+                        isScrolled ? "py-2.5" : "py-4",
+                        'highlight' in item && item.highlight 
+                          ? "text-primary" 
+                          : "text-foreground hover:text-primary"
                       )}
                     >
-                      <div className="grid grid-cols-3 gap-0">
-                        {/* Category Image */}
-                        <div className="col-span-1 relative overflow-hidden">
-                          <img
-                            src={(item as any).image}
-                            alt={item.name}
-                            className="w-full h-full object-cover min-h-[280px]"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                          <div className="absolute bottom-4 left-4 right-4 text-background">
-                            <p className="font-serif text-lg mb-1">{item.name}</p>
-                            <Link
-                              to={`/category/${item.id}`}
-                              className="text-xs uppercase tracking-luxury flex items-center gap-1 hover:underline"
-                            >
-                              View All
-                              <ArrowRight className="w-3 h-3" />
-                            </Link>
-                          </div>
-                        </div>
+                      {item.name}
+                      {hasSubcategories(item) && (
+                        <ChevronDown
+                          className={cn(
+                            "w-3 h-3 transition-transform duration-200",
+                            activeDropdown === item.id && "rotate-180"
+                          )}
+                        />
+                      )}
+                    </Link>
 
-                        {/* Subcategories */}
-                        <div className="col-span-1 p-5 border-l border-border">
-                          <p className="text-xs uppercase tracking-wide-luxury text-primary font-medium mb-4">
-                            Shop by Category
-                          </p>
-                          <div className="space-y-2">
-                            {(item as any).subcategories.slice(0, 7).map((sub: string) => (
+                    {/* Enhanced Mega Menu for categories */}
+                    {hasSubcategories(item) && 'subcategories' in item && 'image' in item && (
+                      <div
+                        className={cn(
+                          "absolute top-full left-1/2 -translate-x-1/2 bg-background border border-border shadow-luxury-lg w-[600px] transition-all duration-200 z-50",
+                          activeDropdown === item.id
+                            ? "opacity-100 visible translate-y-0"
+                            : "opacity-0 invisible -translate-y-2"
+                        )}
+                      >
+                        <div className="grid grid-cols-3 gap-0">
+                          {/* Category Image */}
+                          <div className="col-span-1 relative overflow-hidden">
+                            <img
+                              src={(item as any).image}
+                              alt={item.name}
+                              className="w-full h-full object-cover min-h-[280px]"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
+                            <div className="absolute bottom-4 left-4 right-4 text-background">
+                              <p className="font-serif text-lg mb-1">{item.name}</p>
                               <Link
-                                key={sub}
-                                to={`/category/${item.id}?subcategory=${sub.toLowerCase()}`}
-                                className="block text-sm text-foreground hover:text-primary transition-colors py-1"
+                                to={`/category/${item.id}`}
+                                className="text-xs uppercase tracking-luxury flex items-center gap-1 hover:underline"
                               >
-                                {sub}
+                                View All
+                                <ArrowRight className="w-3 h-3" />
                               </Link>
-                            ))}
+                            </div>
                           </div>
-                        </div>
 
-                        {/* Featured Products */}
-                        <div className="col-span-1 p-5 border-l border-border bg-secondary/30">
-                          <p className="text-xs uppercase tracking-wide-luxury text-primary font-medium mb-4">
-                            Featured
-                          </p>
-                          <div className="space-y-4">
-                            {getFeaturedProducts(item.id).map((product) => (
-                              <Link
-                                key={product.id}
-                                to={`/product/${product.id}`}
-                                className="flex gap-3 group"
-                              >
-                                <img
-                                  src={product.image}
-                                  alt={product.name}
-                                  className="w-16 h-16 object-cover"
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-serif line-clamp-2 group-hover:text-primary transition-colors">
-                                    {product.name}
-                                  </p>
-                                  <p className="text-xs text-primary mt-1">
-                                    ₹{product.price.toLocaleString()}
-                                  </p>
-                                </div>
-                              </Link>
-                            ))}
+                          {/* Subcategories */}
+                          <div className="col-span-1 p-5 border-l border-border">
+                            <p className="text-xs uppercase tracking-wide-luxury text-primary font-medium mb-4">
+                              Shop by Category
+                            </p>
+                            <div className="space-y-2">
+                              {(item as any).subcategories.slice(0, 7).map((sub: string) => (
+                                <Link
+                                  key={sub}
+                                  to={`/category/${item.id}?subcategory=${sub.toLowerCase()}`}
+                                  className="block text-sm text-foreground hover:text-primary transition-colors py-1"
+                                >
+                                  {sub}
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Featured Products */}
+                          <div className="col-span-1 p-5 border-l border-border bg-secondary/30">
+                            <p className="text-xs uppercase tracking-wide-luxury text-primary font-medium mb-4">
+                              Featured
+                            </p>
+                            <div className="space-y-4">
+                              {getFeaturedProducts(item.id).map((product) => (
+                                <Link
+                                  key={product.id}
+                                  to={`/product/${product.id}`}
+                                  className="flex gap-3 group"
+                                >
+                                  <img
+                                    src={product.image}
+                                    alt={product.name}
+                                    className="w-16 h-16 object-cover"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-serif line-clamp-2 group-hover:text-primary transition-colors">
+                                      {product.name}
+                                    </p>
+                                    <p className="text-xs text-primary mt-1">
+                                      ₹{product.price.toLocaleString()}
+                                    </p>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Right: Contact & Account */}
+              <div className="flex items-center gap-4">
+                <a href="tel:+918019156646" className={cn(
+                  "flex items-center gap-1.5 text-xs uppercase tracking-luxury font-medium text-muted-foreground hover:text-primary transition-colors",
+                  isScrolled ? "py-2.5" : "py-4"
+                )}>
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>+91 8019156646</span>
+                </a>
+                <Link to="/stores" className={cn(
+                  "flex items-center gap-1.5 text-xs uppercase tracking-luxury font-medium text-muted-foreground hover:text-primary transition-colors",
+                  isScrolled ? "py-2.5" : "py-4"
+                )}>
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Store Locator</span>
+                </Link>
+                <Link to="/account" className={cn(
+                  "flex items-center gap-1.5 text-xs uppercase tracking-luxury font-medium text-muted-foreground hover:text-primary transition-colors",
+                  isScrolled ? "py-2.5" : "py-4"
+                )}>
+                  <User className="w-3.5 h-3.5" />
+                  <span>My Account</span>
+                </Link>
+              </div>
             </div>
           </div>
         </nav>

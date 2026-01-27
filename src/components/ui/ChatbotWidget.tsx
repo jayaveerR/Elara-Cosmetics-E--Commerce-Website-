@@ -81,13 +81,32 @@ const MiniLotus = ({ className }: { className?: string }) => (
 const FloatingVideoAd = () => {
   const collapsedVideoRef = useRef<HTMLVideoElement>(null);
   const expandedVideoRef = useRef<HTMLVideoElement>(null);
+  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
 
+  // Auto-close timer: minimize after 30 seconds
+  const startAutoCloseTimer = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+    }
+    autoCloseTimerRef.current = setTimeout(() => {
+      handleCollapse();
+    }, 30000); // 30 seconds
+  };
+
+  const clearAutoCloseTimer = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+  };
+
   const handleExpand = () => {
     setIsExpanded(true);
     setIsMuted(false);
+    startAutoCloseTimer(); // Start 30-second auto-close timer
     // Pause collapsed video and play expanded with sound
     if (collapsedVideoRef.current) {
       collapsedVideoRef.current.pause();
@@ -105,6 +124,7 @@ const FloatingVideoAd = () => {
   const handleCollapse = () => {
     setIsExpanded(false);
     setIsMuted(true);
+    clearAutoCloseTimer(); // Clear timer on collapse
     // Stop expanded video and resume collapsed
     if (expandedVideoRef.current) {
       expandedVideoRef.current.pause();
@@ -117,7 +137,6 @@ const FloatingVideoAd = () => {
       }
     }, 100);
   };
-
   const toggleMute = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newMutedState = !isMuted;

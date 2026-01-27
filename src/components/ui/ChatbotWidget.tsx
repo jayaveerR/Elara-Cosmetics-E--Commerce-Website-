@@ -180,7 +180,7 @@ const FloatingVideoAd = () => {
         "fixed z-50 transition-all duration-500 ease-out",
         isExpanded
           ? "bottom-6 right-6 sm:bottom-8 sm:right-8"
-          : "bottom-28 right-6 sm:bottom-32 sm:right-6"
+          : "bottom-32 right-6 sm:bottom-36 sm:right-6"
       )}
     >
       {/* Collapsed Circular View */}
@@ -286,21 +286,13 @@ const FloatingVideoAd = () => {
         </div>
         
         {/* CTA Footer */}
-        <div className="p-4 bg-primary space-y-3">
+        <div className="p-4 bg-primary">
           <a
             href="/category/face"
             className="block w-full text-center py-3 bg-primary-foreground/10 text-primary-foreground text-sm font-medium uppercase tracking-wider hover:bg-primary-foreground/20 transition-colors rounded-lg"
           >
             Shop Now
           </a>
-          
-          {/* Don't show again option */}
-          <button
-            onClick={handleDontShowAgain}
-            className="w-full text-center text-xs text-primary-foreground/70 hover:text-primary-foreground transition-colors underline"
-          >
-            Don't show this again
-          </button>
         </div>
       </div>
     </div>

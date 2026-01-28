@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, MapPin, Phone, Gift, Sparkles, ArrowRight, Truck, RefreshCw } from "lucide-react";
+import { Search, User, Heart, ShoppingBag, Menu, X, ChevronDown, MapPin, Phone, Gift, Sparkles, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { categories, products } from "@/data/products";
 import { cn } from "@/lib/utils";
@@ -59,29 +59,6 @@ const Header = () => {
         "bg-background/70 backdrop-blur-md lg:bg-cream lg:backdrop-blur-none",
         isScrolled ? "shadow-sm border-b border-border/30" : "border-b border-transparent"
       )}>
-        {/* Integrated Announcement Bar - Scrolling promo messages */}
-        <div className={cn(
-          "hidden lg:block bg-accent text-accent-foreground overflow-hidden transition-all duration-300",
-          isScrolled ? "h-0 opacity-0" : "h-7 opacity-100"
-        )}>
-          <div className="animate-scroll-left flex whitespace-nowrap h-full items-center">
-            {[...Array(3)].flatMap((_, setIndex) => [
-              <div key={`truck-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <Truck className="w-3.5 h-3.5" />
-                <span>Free Shipping on Orders Above ₹999</span>
-              </div>,
-              <div key={`gift-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <Gift className="w-3.5 h-3.5" />
-                <span>Complimentary Gift Wrapping Available</span>
-              </div>,
-              <div key={`return-${setIndex}`} className="inline-flex items-center gap-2 mx-8 text-xs uppercase tracking-luxury">
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Easy 30-Day Returns</span>
-              </div>
-            ])}
-          </div>
-        </div>
-
         {/* Top Utility Bar - Hidden when scrolled */}
         <div className={cn(
           "hidden lg:block bg-cream-dark/40 border-b border-border/20 transition-all duration-300 overflow-hidden",

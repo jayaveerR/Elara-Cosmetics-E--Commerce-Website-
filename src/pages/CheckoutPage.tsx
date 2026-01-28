@@ -1,15 +1,72 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/data/products";
+import { MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 
 const CheckoutPage = () => {
-  const { items, totalPrice } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", address: "", city: "", state: "", pincode: "" });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const generateWhatsAppMessage = () => {
+    const customerName = `${formData.firstName} ${formData.lastName}`.trim();
+    const orderItems = items.map(item => 
+      `• ${item.product.name} (${item.product.size}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity)}`
+    ).join('\n');
+    
+    const message = `🛒 *New Order from ELARA COSMETICS*
+
+*Customer Details:*
+Name: ${customerName || 'Not provided'}
+Email: ${formData.email || 'Not provided'}
+Phone: ${formData.phone || 'Not provided'}
+
+*Shipping Address:*
+${formData.address || 'Not provided'}
+${formData.city}, ${formData.state} - ${formData.pincode}
+
+*Order Items:*
+${orderItems}
+
+*Order Total:* ${formatPrice(totalPrice)}
+
+Please confirm this order. Thank you! 🙏`;
+
+    return encodeURIComponent(message);
+  };
+
+  const handleWhatsAppCheckout = () => {
+    // Validate required fields
+    if (!formData.firstName || !formData.phone || !formData.address || !formData.city || !formData.pincode) {
+      toast.error("Please fill in required fields: Name, Phone, Address, City, and PIN Code");
+      return;
+    }
+
+    if (items.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    const phoneNumber = "918019156646"; // Brand WhatsApp number
+    const message = generateWhatsAppMessage();
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
+    
+    // Clear cart and show success
+    clearCart();
+    toast.success("Redirecting to WhatsApp for order confirmation!");
+    
+    // Navigate to home after a short delay
+    setTimeout(() => navigate('/'), 2000);
   };
 
   return (
@@ -21,20 +78,25 @@ const CheckoutPage = () => {
           <div>
             <h2 className="font-serif text-xl mb-6">Shipping Information</h2>
             <div className="grid grid-cols-2 gap-4">
-              <input name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleChange} className="col-span-1 border border-border p-3 bg-background" />
+              <input name="firstName" placeholder="First Name *" value={formData.firstName} onChange={handleChange} className="col-span-1 border border-border p-3 bg-background" required />
               <input name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleChange} className="col-span-1 border border-border p-3 bg-background" />
               <input name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" />
-              <input name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" />
-              <input name="address" placeholder="Address" value={formData.address} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" />
-              <input name="city" placeholder="City" value={formData.city} onChange={handleChange} className="border border-border p-3 bg-background" />
+              <input name="phone" placeholder="Phone *" value={formData.phone} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" required />
+              <input name="address" placeholder="Address *" value={formData.address} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" required />
+              <input name="city" placeholder="City *" value={formData.city} onChange={handleChange} className="border border-border p-3 bg-background" required />
               <input name="state" placeholder="State" value={formData.state} onChange={handleChange} className="border border-border p-3 bg-background" />
-              <input name="pincode" placeholder="PIN Code" value={formData.pincode} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" />
+              <input name="pincode" placeholder="PIN Code *" value={formData.pincode} onChange={handleChange} className="col-span-2 border border-border p-3 bg-background" required />
             </div>
             
-            <h2 className="font-serif text-xl mt-8 mb-6">Payment Method</h2>
-            <div className="border border-border p-4 bg-secondary/30 text-center">
-              <p className="text-muted-foreground">Payment integration coming soon</p>
-              <p className="text-sm text-muted-foreground mt-2">This is a visual mockup</p>
+            <div className="mt-8 p-6 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="flex items-center gap-3 mb-3">
+                <MessageCircle className="w-6 h-6 text-green-600" />
+                <h3 className="font-serif text-lg text-green-800 dark:text-green-200">Order via WhatsApp</h3>
+              </div>
+              <p className="text-sm text-green-700 dark:text-green-300">
+                Your order details will be sent to our WhatsApp for quick confirmation and personalized service. 
+                We'll respond promptly to confirm your order!
+              </p>
             </div>
           </div>
 
@@ -57,7 +119,16 @@ const CheckoutPage = () => {
               <div className="flex justify-between text-muted-foreground"><span>Shipping</span><span>Free</span></div>
               <div className="flex justify-between font-medium text-lg pt-2 border-t border-border"><span>Total</span><span>{formatPrice(totalPrice)}</span></div>
             </div>
-            <button className="btn-luxury w-full mt-6">Place Order</button>
+            <button 
+              onClick={handleWhatsAppCheckout}
+              className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-4 px-6 flex items-center justify-center gap-3 transition-colors font-medium"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Complete Order via WhatsApp
+            </button>
+            <p className="text-xs text-center text-muted-foreground mt-3">
+              You'll be redirected to WhatsApp to confirm your order
+            </p>
           </div>
         </div>
       </div>

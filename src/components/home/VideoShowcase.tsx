@@ -1,33 +1,24 @@
 import { useRef, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { useAudioManager } from "@/context/AudioContext";
 
 const AUDIO_ID = "video-showcase";
 
-const videoAds = [
-  { id: 1, src: "/videos/elara-luxury-ad.mp4", title: "Luxury Collection" },
-  { id: 2, src: "/videos/elara-cosmetics-ad-2.mp4", title: "New Arrivals" },
-  { id: 3, src: "/videos/hero-cosmetics.mp4", title: "Self-Care Ritual" },
-];
+const videoAd = { id: 1, src: "/videos/elara-luxury-ad.mp4", title: "Luxury Collection" };
 
 const VideoShowcase = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   
-  const { registerAudio, unregisterAudio, requestAudioPlay, muteAll } = useAudioManager();
-
-  const currentVideo = videoAds[currentVideoIndex];
+  const { registerAudio, unregisterAudio, requestAudioPlay } = useAudioManager();
 
   // Register video with audio manager
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
       registerAudio(AUDIO_ID, video);
-      // Ensure video starts muted
       video.muted = true;
     }
     return () => {
@@ -35,34 +26,19 @@ const VideoShowcase = () => {
     };
   }, [registerAudio, unregisterAudio]);
 
-  // Handle video end - play next video
+  // Loop video on end
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
     const handleEnded = () => {
-      const nextIndex = (currentVideoIndex + 1) % videoAds.length;
-      setCurrentVideoIndex(nextIndex);
-      // Keep muted state when transitioning
-      setIsMuted(true);
-      muteAll();
+      video.currentTime = 0;
+      video.play().catch(() => {});
     };
 
     video.addEventListener("ended", handleEnded);
     return () => video.removeEventListener("ended", handleEnded);
-  }, [currentVideoIndex, muteAll]);
-
-  // Play video when index changes
-  useEffect(() => {
-    const video = videoRef.current;
-    if (video) {
-      video.load();
-      video.muted = true; // Always start muted on video change
-      setIsMuted(true);
-      video.play().catch(() => {});
-      setIsPlaying(true);
-    }
-  }, [currentVideoIndex]);
+  }, []);
 
   const togglePlay = () => {
     if (videoRef.current) {
@@ -78,37 +54,13 @@ const VideoShowcase = () => {
   const toggleMute = () => {
     if (videoRef.current) {
       if (isMuted) {
-        // Request exclusive audio playback
         requestAudioPlay(AUDIO_ID);
         setIsMuted(false);
       } else {
-        // Mute this video
         videoRef.current.muted = true;
         setIsMuted(true);
       }
     }
-  };
-
-  const goToVideo = (index: number) => {
-    if (index !== currentVideoIndex) {
-      muteAll();
-      setIsMuted(true);
-      setCurrentVideoIndex(index);
-    }
-  };
-
-  const prevVideo = () => {
-    muteAll();
-    setIsMuted(true);
-    const prevIndex = (currentVideoIndex - 1 + videoAds.length) % videoAds.length;
-    setCurrentVideoIndex(prevIndex);
-  };
-
-  const nextVideo = () => {
-    muteAll();
-    setIsMuted(true);
-    const nextIndex = (currentVideoIndex + 1) % videoAds.length;
-    setCurrentVideoIndex(nextIndex);
   };
 
   return (
@@ -144,32 +96,16 @@ const VideoShowcase = () => {
           <div className="relative aspect-video bg-foreground/5 overflow-hidden group">
             <video
               ref={videoRef}
-              key={currentVideo.id}
-              src={currentVideo.src}
+              src={videoAd.src}
               className="w-full h-full object-cover"
               autoPlay
               muted
               playsInline
+              loop
             />
             
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevVideo}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-foreground/80 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary-foreground transition-all opacity-0 group-hover:opacity-100"
-              aria-label="Previous video"
-            >
-              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
-            <button
-              onClick={nextVideo}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary-foreground/80 backdrop-blur-sm flex items-center justify-center text-foreground hover:bg-primary-foreground transition-all opacity-0 group-hover:opacity-100"
-              aria-label="Next video"
-            >
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
             
             {/* Video Controls */}
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 flex items-end justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -197,23 +133,6 @@ const VideoShowcase = () => {
                     <Volume2 className="w-4 h-4 md:w-5 md:h-5" />
                   )}
                 </button>
-                
-                {/* Video Indicator */}
-                <div className="hidden sm:flex items-center gap-2 ml-2">
-                  {videoAds.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => goToVideo(index)}
-                      className={cn(
-                        "w-8 h-1 rounded-full transition-all duration-300",
-                        index === currentVideoIndex
-                          ? "bg-primary w-12"
-                          : "bg-primary-foreground/50 hover:bg-primary-foreground/70"
-                      )}
-                      aria-label={`Go to video ${index + 1}`}
-                    />
-                  ))}
-                </div>
               </div>
 
               {/* Right CTA */}
